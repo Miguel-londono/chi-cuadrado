@@ -7,7 +7,7 @@ export default function PruebaIndependencia() {
     { row: "Categoría 2", values: ["", ""], total: 0 },
   ]);
   const [columnTotals, setColumnTotals] = useState(["", "", 0]); // 2 columnas + total general
-  const [alpha, setAlpha] = useState(0.05);
+  const [alpha, setAlpha] = useState('');
   const [result, setResult] = useState(null);
 
   // Actualizar una celda específica
