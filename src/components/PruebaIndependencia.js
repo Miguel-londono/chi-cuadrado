@@ -54,7 +54,7 @@ export default function PruebaIndependencia() {
     setColumnTotals([...columnTotals.slice(0, -1), "", columnTotals[columnTotals.length - 1]]);
   };
 
-  // Calcular el estadístico chi-cuadrado
+  // Calcular el estadístico chi-cuadrado y el p-valor
   const calculateChiSquare = () => {
     const total = columnTotals[columnTotals.length - 1];
     const expectedValues = data.map((row) =>
@@ -75,13 +75,13 @@ export default function PruebaIndependencia() {
 
     const degreesOfFreedom =
       (data.length - 1) * (columnTotals.length - 2); // Fórmula: (filas - 1) * (columnas - 1)
-    const criticalValue = jStat.chisquare.inv(1 - alpha, degreesOfFreedom);
+    const pValue = 1 - jStat.chisquare.cdf(chiSquare, degreesOfFreedom);
 
     setResult({
       chiSquare,
-      criticalValue,
+      pValue,
       decision:
-        chiSquare > criticalValue
+        pValue < alpha
           ? "Se rechaza H0 (existe relación significativa)"
           : "No se rechaza H0 (no existe relación significativa)",
     });
@@ -177,21 +177,22 @@ export default function PruebaIndependencia() {
 
       {/* Resultados */}
       {result && (
-        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md w-full">
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">
-            Resultados
+        <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md w-full mt-6 border-l-4 border-blue-500">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+            Resultados de Prueba por Independencia
           </h2>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gray-300 text-lg">
             <strong>Chi-Cuadrado:</strong> {result.chiSquare.toFixed(3)}
           </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <strong>Valor Crítico:</strong> {result.criticalValue.toFixed(3)}
+          
+          <p className="text-gray-700 dark:text-gray-300 text-lg">
+            <strong>P-valor:</strong> {result.pValue.toFixed(6)}
           </p>
           <p
-            className={`text-lg font-semibold ${
-              result.decision.includes("rechaza")
-                ? "text-red-600"
-                : "text-green-600"
+            className={`text-xl font-semibold mt-4 p-3 rounded-lg ${
+              result.decision === "No se rechaza H0"
+                ? "bg-green-200 text-green-700"
+                : "bg-red-200 text-red-700"
             }`}
           >
             <strong>Decisión:</strong> {result.decision}
